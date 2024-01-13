@@ -1,5 +1,5 @@
 ﻿
-namespace Game.Items
+namespace Game
 {
     public static class Extentions
     {

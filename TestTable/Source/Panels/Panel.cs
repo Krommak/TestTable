@@ -9,6 +9,7 @@ namespace Game.Panels
         protected List<Item> Items;
         protected PanelType PanelType;
         protected string Label;
+        protected Action<Item> OnChooseAction;
 
         public virtual Panel Init(PanelType type, IInputService inputService)
         {
@@ -19,18 +20,10 @@ namespace Game.Panels
             return this;
         }
 
-        public virtual Panel SetItems(StaticData data)
+        public Panel SetOnChooseAction(Action<Item> action)
         {
-            if(data.TryGetItems(PanelType, out var items))
-            {
-                Items = items;
-            }
+            OnChooseAction = action;
 
-            return this;
-        }
-
-        public virtual Panel CreateActions()
-        {
             return this;
         }
 
@@ -46,22 +39,29 @@ namespace Game.Panels
             InputService.WaitInput((index) => GetItem(index));
         }
 
+        public void AddItem(Item item)
+        {
+            Items.Add(item);
+        }
+
+        private void GetItem(int index)
+        {
+            OnChooseAction(Items[index]);
+
+            if (index < Items.Count)
+            {
+                Items.RemoveBySwap(index);
+            }
+            Console.Clear();
+            ShowPanel();
+        }
+
         private void ShowItems()
         {
             for (int i = 0; i < Items.Count; i++)
             {
                 Console.WriteLine($"{i}. {Items[i].Name}");
             }
-        }
-
-        public void GetItem(int index)
-        {
-            if(index < Items.Count)
-            {
-                Items.RemoveBySwap(index);
-            }
-            Console.Clear();
-            ShowPanel();
         }
     }
 }
