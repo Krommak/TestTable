@@ -14,22 +14,17 @@ namespace Game
         {
             _staticData = new StaticData();
             _staticData.Fill();
-
+            _panels = new Dictionary<PanelType, Panel>();
             var inputService = new KeyboardInput();
 
-            var table = new Panel();
+            var table = new Panel(inputService);
 
-            _panels.Add(PanelType.Inventory, new Panel());
+            _panels.Add(PanelType.Inventory, new Panel(inputService));
             _panels.Add(PanelType.Table, table);
-
-            table
-                .Init(PanelType.Table, inputService)
-                .SetOnChooseAction((item) => AddItemToInventory(item))
-                .ShowPanel();
 
             foreach (var panel in _panels)
             {
-                if(_staticData.TryGetItems(panel.Key, out var items))
+                if (_staticData.TryGetItems(panel.Key, out var items))
                 {
                     foreach (var item in items)
                     {
@@ -37,6 +32,11 @@ namespace Game
                     }
                 }
             }
+
+            table
+                .Init(PanelType.Table)
+                .SetOnChooseAction((item) => AddItemToInventory(item))
+                .ShowPanel();
         }
 
         private void AddItemToInventory(Item item)
